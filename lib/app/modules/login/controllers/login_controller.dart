@@ -30,7 +30,6 @@ class LoginController extends GetxController {
     super.onClose();
   }
 
-
   Future<void> login(BuildContext context) async {
     isLoading.value = true;
 
@@ -61,8 +60,8 @@ class LoginController extends GetxController {
 
       // Save session and navigate
       await firebaseController.saveUserSession(userCredential.user!.uid, phone);
-      print(userCredential.user!.uid);
-      Get.offAllNamed('/home');
+      print("------- UID: $userCredential.user!.uid");
+      Get.offAllNamed('/home', arguments: userCredential.user!.uid);
     } catch (error) {
       Get.snackbar('Error', 'An error occurred: ${error.toString()}');
     } finally {

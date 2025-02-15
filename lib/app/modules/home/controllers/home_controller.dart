@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 
 class HomeController extends GetxController {
-  final String id = Get.arguments ?? '';
+  late String id;
   var firstName = ''.obs;
   var lastName = ''.obs;
   var profileImagePath = ''.obs;
@@ -14,6 +14,11 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    id = Get.arguments ?? '';
+
+    // Debugging
+    print("------- Get.arguments: ${Get.arguments}");
+    print("------- Assigned ID: $id");
     fetchUserData();
   }
 
@@ -24,37 +29,34 @@ class HomeController extends GetxController {
 
       // 🔴 Check if ID is empty before making Firestore request
       if (id.isEmpty) {
-        print("Error: ID is empty!");
+        print("------- Error: ID is empty!");
         isLoading.value = false;
         return;
       } else {
-        print(id);
+        print("------- Fetching user with ID: $id"); // Debugging log
       }
 
-      print("Fetching user with ID: $id"); // Debugging log
-
       // Fetch user by document ID
-      DocumentSnapshot userDoc =
-      await _firestore.collection('users').doc(id).get();
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(id).get();
 
       if (userDoc.exists) {
         var userData = userDoc.data() as Map<String, dynamic>;
 
         // Debugging: Print fetched data
-        print("User Data: $userData");
+        print("------- User Data: $userData");
 
         // Update reactive variables
-        firstName.value = userData['first_name'] ?? '';
-        lastName.value = userData['last_name'] ?? '';
-        profileImagePath.value = userData['image'] ?? '';
+        firstName.value = userData['first_name'] ?? 'No first name';
+        lastName.value = userData['last_name'] ?? 'No last name';
+        profileImagePath.value = userData['image'] ?? 'No image';
 
         isLoading.value = false;
       } else {
-        print("No user found with ID: $id");
+        print("------- No user found with ID: $id");
         isLoading.value = false;
       }
     } catch (e) {
-      print("Error fetching user data: $e");
+      print("------- Error fetching user data: $e");
       isLoading.value = false;
     }
   }
