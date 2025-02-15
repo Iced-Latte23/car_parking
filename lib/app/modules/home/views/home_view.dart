@@ -5,6 +5,7 @@ import 'package:second_car_parking/app/modules/home/controllers/home_controller.
 
 class HomeView extends StatelessWidget {
   final String id = Get.arguments ?? '';
+
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.find<HomeController>();
@@ -33,7 +34,8 @@ class HomeView extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundImage: AssetImage('assets/images/download.jpeg'),
+                  backgroundImage:
+                      AssetImage(controller.profileImagePath.value),
                 ),
                 SizedBox(width: 10),
                 Expanded(
@@ -46,7 +48,9 @@ class HomeView extends StatelessWidget {
                     }
 
                     // Ensure firstName and lastName are not empty before displaying
-                    String fullName = '${controller.firstName.value} ${controller.lastName.value}'.trim();
+                    String fullName =
+                        '${controller.firstName.value} ${controller.lastName.value}'
+                            .trim();
 
                     // Fallback if both firstName and lastName are empty
                     return Text(
@@ -173,9 +177,14 @@ class HomeView extends StatelessWidget {
               width: 50,
               child: CircleAvatar(
                 radius: 50,
-                backgroundImage: controller.profileImagePath.isNotEmpty
-                    ? AssetImage(controller.profileImagePath.value)
-                    : AssetImage('assets/images/download.jpeg'), // Default image if path is empty
+                backgroundImage: controller.profileImagePath.value.isNotEmpty &&
+                        Uri.tryParse(controller.profileImagePath.value)
+                                ?.hasAbsolutePath ==
+                            true
+                    ? NetworkImage(
+                        controller.profileImagePath.value) // Load from network
+                    : AssetImage(controller.profileImagePath.value)
+                        as ImageProvider, // Load from assets
               ),
             );
           }),
@@ -314,10 +323,10 @@ class HomeView extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildButtonContainer('assets/icons/reserved.png', 'Reserve', (){
+        _buildButtonContainer('assets/icons/reserved.png', 'Reserve', () {
           Get.toNamed('/reserved');
         }),
-        _buildButtonContainer('assets/icons/history.png', 'History', (){}),
+        _buildButtonContainer('assets/icons/history.png', 'History', () {}),
       ],
     );
   }

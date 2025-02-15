@@ -47,7 +47,7 @@ class HomeController extends GetxController {
         // Update reactive variables
         firstName.value = userData['first_name'] ?? 'No first name';
         lastName.value = userData['last_name'] ?? 'No last name';
-        profileImagePath.value = userData['image'] ?? 'No image';
+        profileImagePath.value = userData['image']?.isNotEmpty == true ? userData['image'] : 'assets/images/default_profile.jpg';
 
         isLoading.value = false;
       } else {

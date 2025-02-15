@@ -4,8 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../modules/login/controllers/login_controller.dart';
 import '../widgets/show_dialog.dart';
 
 class FirebaseController extends GetxController {
