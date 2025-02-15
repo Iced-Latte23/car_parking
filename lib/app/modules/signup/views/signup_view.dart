@@ -9,7 +9,6 @@ import '../controllers/signup_controller.dart';
 class SignupView extends GetView<SignupController> {
   SignupView({super.key});
 
-  @override
   final SignupController controller = Get.find<SignupController>();
 
   @override
