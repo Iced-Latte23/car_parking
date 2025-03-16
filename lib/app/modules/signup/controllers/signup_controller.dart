@@ -12,6 +12,7 @@ class SignupController extends GetxController {
 
   RxBool showPassword = false.obs;
   RxBool showConfirmPassword = false.obs;
+  RxBool isLoading = false.obs;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? firstName;
@@ -71,8 +72,15 @@ class SignupController extends GetxController {
   }
 
   Future<void> registerUser(BuildContext context) async {
-    if (!await _validateInputs(context)) return;
-    if (!await _checkExistingUser(context, email!, phoneNumber!)) return;
+    isLoading.value = true;
+    if (!await _validateInputs(context)) {
+      isLoading.value = false;
+      return;
+    }
+    if (!await _checkExistingUser(context, email!, phoneNumber!)) {
+      isLoading.value = false;
+      return;
+    }
 
     try {
       await firebaseController.register(
@@ -90,6 +98,8 @@ class SignupController extends GetxController {
     } catch (e) {
       debugPrint("--- Error: $e");
       dialog.error(context, 'An unexpected error occurred. Try again later.');
+    } finally {
+      isLoading.value = false;
     }
   }
 }

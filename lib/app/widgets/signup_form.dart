@@ -16,6 +16,13 @@ class SignupForm extends StatelessWidget {
         RegExp(r'[^a-zA-Z0-9]').hasMatch(value); // Contains special characters
   }
 
+  bool isValidEmail(String value) {
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -72,7 +79,7 @@ class SignupForm extends StatelessWidget {
       onSaved: (value) => controller.email = value,
       validator: (value) {
         if (value == null || value.isEmpty) return 'Please enter your email';
-        if (!isValid(value)) return 'Invalid email format';
+        if (!isValidEmail(value)) return 'Invalid email format';
         return null;
       },
       decoration: InputDecoration(
