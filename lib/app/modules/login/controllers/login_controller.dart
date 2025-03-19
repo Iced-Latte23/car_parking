@@ -54,12 +54,11 @@ class LoginController extends GetxController {
       final userCredential = await firebaseController.loginWithPhoneAndPassword(
           context, cleanPhoneNumber, password);
       if (userCredential == null || userCredential.user == null) {
-        Get.snackbar('Error', 'Login failed. Please check your credentials.');
         return;
       }
 
       // Save session and navigate
-      await firebaseController.saveUserSession(userCredential.user!.uid, phone);
+      await saveUserSession(userCredential.user!.uid, phone);
       print("------- UID: $userCredential.user!.uid");
       Get.offAllNamed('/home', arguments: userCredential.user!.uid);
     } catch (error) {

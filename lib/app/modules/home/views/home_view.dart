@@ -35,7 +35,11 @@ class HomeView extends StatelessWidget {
                 CircleAvatar(
                   radius: 30,
                   backgroundImage:
-                      AssetImage(controller.profileImagePath.value),
+                  controller.profileImagePath.value.isNotEmpty && Uri.tryParse(controller.profileImagePath.value)?.hasAbsolutePath == true
+                      ? NetworkImage(
+                      controller.profileImagePath.value) // Load from network
+                      : AssetImage(controller.profileImagePath.value)
+                  as ImageProvider,
                 ),
                 SizedBox(width: 10),
                 Expanded(
@@ -177,10 +181,7 @@ class HomeView extends StatelessWidget {
               width: 50,
               child: CircleAvatar(
                 radius: 50,
-                backgroundImage: controller.profileImagePath.value.isNotEmpty &&
-                        Uri.tryParse(controller.profileImagePath.value)
-                                ?.hasAbsolutePath ==
-                            true
+                backgroundImage: controller.profileImagePath.value.isNotEmpty && Uri.tryParse(controller.profileImagePath.value)?.hasAbsolutePath == true
                     ? NetworkImage(
                         controller.profileImagePath.value) // Load from network
                     : AssetImage(controller.profileImagePath.value)

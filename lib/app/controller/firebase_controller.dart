@@ -114,35 +114,22 @@ class FirebaseController extends GetxController {
     }
   }
 
-  Future<DocumentSnapshot?> getUserData({String? phone, String? uid}) async {
-    try {
-      if (uid != null) {
-        // Fetch user by UID
-        return await _firestore
-            .collection(FirestoreCollections.users)
-            .doc(uid)
-            .get();
-      } else if (phone != null) {
-        // Fetch user where phone matches
-        QuerySnapshot querySnapshot = await _firestore
-            .collection(FirestoreCollections.users)
-            .where('phone', isEqualTo: phone)
-            .limit(1)
-            .get();
-        if (querySnapshot.docs.isNotEmpty) {
-          return querySnapshot.docs.first;
-        }
-      }
-    } catch (e) {
-      print("Error fetching user data: $e");
+  Future<DocumentSnapshot> fetchUserData(String? uid) async {
+    if (uid == null || uid.isEmpty) {
+      throw ArgumentError('User ID cannot be null or empty');
     }
-    return null;
-  }
 
-  Future<void> saveUserSession(String userId, String phoneNumber) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userId', userId);
-    await prefs.setString('phoneNumber', phoneNumber);
+    try {
+      final userDoc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(uid)
+          .get();
+
+      return userDoc;
+    } catch (e) {
+      print('Error fetching user data: $e');
+      rethrow;
+    }
   }
 
   Future<void> sendMagicLink(String email) async {
@@ -186,6 +173,51 @@ class FirebaseController extends GetxController {
           .collection(FirestoreCollections.users)
           .doc(user.value!.uid)
           .update(updatedData);
+    }
+  }
+
+  Future<QuerySnapshot> fetchSlots() async {
+    try {
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('slots').get();
+
+      return snapshot;
+    } catch (e) {
+      print('Error fetching slots: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateSlotStatus(String slotId, String currentStatus) async {
+    try {
+      await _firestore.collection('slots').doc(slotId).update({
+        'status': currentStatus == 'free' ? 'occupied' : 'free',
+      });
+    } catch (e) {
+      print('Error updating slot status: $e');
+    }
+  }
+
+  Future<void> addReservation(
+      String firstName,
+      String lastName,
+      String plateNumber,
+      String phoneNumber,
+      String slotId,
+      String time) async {
+    try {
+      await _firestore.collection('reservations').add({
+        'first_name': firstName,
+        'last_name': lastName,
+        'plate_number': plateNumber,
+        'phone_number': phoneNumber,
+        'slot_number': slotId,
+        'status': 'confirmed',
+        'time': time,
+        'booking_time': DateTime.now().toIso8601String()
+      });
+    } catch (e) {
+      print('Error adding reservation: $e');
     }
   }
 }
